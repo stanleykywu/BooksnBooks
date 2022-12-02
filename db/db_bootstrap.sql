@@ -1,7 +1,5 @@
 CREATE DATABASE bookstore_db;
 
-CREATE USER 'webapp'@'%' IDENTIFIED BY 'S7wR9Y@mnPSqsT1u';
-
 GRANT ALL PRIVILEGES ON bookstore_db.* TO 'webapp'@'%';
 
 FLUSH PRIVILEGES;
