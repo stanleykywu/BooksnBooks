@@ -34,7 +34,6 @@ def add_customer():
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     query = f'INSERT INTO Customer(username, password, dob, email, phone, first_name, last_name) VALUES("{username}", "{password}", "{dob}", "{email}", "{phone}", "{first_name}", "{last_name}")'
-    print(query)
     cursor.execute(query)
     db.get_db().commit()
 

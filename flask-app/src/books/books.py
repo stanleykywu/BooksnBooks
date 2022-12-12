@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, current_app
 import json
 from src import db
 
@@ -22,3 +22,19 @@ def get_book_reviews(isbn):
     the_response.status_code = 200
     the_response.mimetype = "application/json"
     return the_response
+
+
+# Add new book reivew to DB
+@books.route("/new_review", methods=["POST"])
+def add_book_review():
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    username = request.form["username"]
+    isbn = request.form["isbn"]
+    review_content = request.form["review_content"]
+    review_stars = request.form["review_stars"]
+    query = f'INSERT INTO BookReview (customer_id, isbn, review_content, review_stars) VALUES((SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1), "{isbn}", "{review_content}", "{review_stars}")'
+    cursor.execute(query)
+    db.get_db().commit()
+
+    return "Success!"
