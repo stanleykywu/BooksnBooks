@@ -10,7 +10,9 @@ books = Blueprint("books", __name__)
 @books.route("/book/<isbn>", methods=["GET"])
 def get_book_reviews(isbn):
     cursor = db.get_db().cursor()
-    cursor.execute(f"SELECT * FROM BookReview WHERE isbn = {isbn} LIMIT 5")
+    cursor.execute(
+        f"SELECT review_content AS 'Review Content', review_stars AS 'Stars' FROM BookReview WHERE isbn = {isbn}"
+    )
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
