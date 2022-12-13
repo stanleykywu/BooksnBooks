@@ -1,6 +1,18 @@
 # BooksnBooks Database and REST api
 
-This repository allows one to host their own REST api for an online library/bookstore management system locally. Examples of possible actions include customers buying books, and viewing available books in libraries.
+This repository allows one to host their own REST api for an online library/bookstore management system locally. Examples of possible actions include customers buying books, and viewing available books in libraries. This project's goal is to develop a stronger connection between readers, authors, and libraries while maintaining a centralized location for book distribution.
+
+A video pitch demo of this project can be found here: https://drive.google.com/file/d/1syR69w59enBVpXAvNe561VRHgtfOYR5k/view?usp=sharing
+
+This project is meant to support three personas:
+
+1. Customer
+This persona represents a user of this applciation who wants to read and review books. Our project allows these users to purchase books from libraries and write a review for any book. At any time, a customer can log in to view the books they own or enter an invoice to check the receipts they have accumulated.
+2. Author
+This persona represents an author who writes books. At any point, an author is able to log in and view the books that they have written. An author can also request a partnership with a library, which allows them to sell their books at a discounted price.
+3. Library
+This persona represents libraries where users purchase books from. Each library has a name, location (town and country), and inventory of books that they own. Users can look up libraries and view their book inventories.
+
 
 # MySQL + Flask Boilerplate Project
 
