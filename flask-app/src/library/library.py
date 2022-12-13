@@ -11,7 +11,7 @@ libraries = Blueprint("libraries", __name__)
 def get_libraries(country, town):
     cursor = db.get_db().cursor()
     cursor.execute(
-        f'SELECT name AS "Search_Results" from Library WHERE country = "{country}" AND town = "{town}"'
+        f'SELECT name AS "Results" from Library WHERE country = "{country}" AND town = "{town.replace("+", " ")}"'
     )
     row_headers = [x[0] for x in cursor.description]
     json_data = []
