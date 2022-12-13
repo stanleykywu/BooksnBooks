@@ -63,7 +63,6 @@ def add_book_to_cart():
             VALUES("1001-01-01", 0, (SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1))'
         cursor.execute(invoice_query)
 
-    # TODO: add support for price_per_quantity
     discount_query = f'SELECT discount FROM AuthorPartner NATURAL JOIN Library \
         WHERE name = "{library_name}" LIMIT 1'
     cursor.execute(discount_query)
@@ -76,8 +75,32 @@ def add_book_to_cart():
     line_query = f'INSERT INTO InvoiceLine (invoice_id, price_per_unit, quantity, isbn) \
         VALUES((SELECT invoice_id FROM Customer NATURAL JOIN Invoice \
             WHERE date = "1001-01-01" AND username = "{username}" LIMIT 1), \
-            (SELECT price FROM Book WHERE isbn = "{isbn}" LIMIT 1) * (1 - {discount})* {quantity}, \
+            (SELECT price FROM Book WHERE isbn = "{isbn}" LIMIT 1) * (1 - {discount}), \
             {quantity}, "{isbn}")'
     cursor.execute(line_query)
     db.get_db().commit()
     return "Success!"
+
+@customers.route("/checkout", methods=["PATCH"])
+def checkout_cart():
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    username = request.form["username"]
+    # date and total are populated once the customer checks out
+    total_query = f'SELECT SUM(price_per_unit * quantity) FROM InvoiceLine \
+        WHERE invoice_id = (SELECT invoice_id FROM Customer NATURAL JOIN Invoice \
+            WHERE date = "1001-01-01" AND username = "{username}" LIMIT 1)'
+    cursor.execute(total_query)
+    theData = cursor.fetchall()
+    print(theData)
+    if theData != ():
+        invoice_query = f'UPDATE Invoice \
+            SET date = CURDATE(), total = {theData[0][0]}\
+            WHERE date = "1001-01-01" AND \
+                customer_id = (SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1)'
+        cursor.execute(invoice_query)
+        db.get_db().commit()
+        return "Success!"
+    return "Failure"
+
+
