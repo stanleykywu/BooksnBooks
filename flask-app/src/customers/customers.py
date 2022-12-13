@@ -41,11 +41,13 @@ def add_customer():
 
 
 # Get all books that a customer has bought
-@customers.route("/customers/<customerID>", methods=["GET"])
-def get_customer_books(customerID):
+@customers.route("/customers/<username>/<password>", methods=["GET"])
+def get_customer_books(username, password):
     cursor = db.get_db().cursor()
     cursor.execute(
-        f"SELECT * from Invoice where customer_id = {customerID} NATURAL JOIN InvoiceLine NATURAL JOIN Book"
+        f'SELECT title AS "Your Books" from Invoice \
+            NATURAL JOIN Customer NATURAL JOIN InvoiceLine NATURAL JOIN Book \
+            WHERE username = "{username}" AND password = "{password}"'
     )
     row_headers = [x[0] for x in cursor.description]
     json_data = []
@@ -56,3 +58,22 @@ def get_customer_books(customerID):
     the_response.status_code = 200
     the_response.mimetype = "application/json"
     return the_response
+
+# Add new book to cart
+@customers.route("/new_book_to_cart", methods=["POST"])
+def add_book_to_cart():
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    username = request.form["username"]
+    isbn = request.form["isbn"]
+    query = f'SELECT * FROM Customer NATURAL JOIN Invoice WHERE date IS NULL AND username = "{username}"'
+    cursor.execute(query)
+    theData = cursor.fetchall()[0] == ()
+    print(f'CART EXISTS: {theData}')
+    '''
+    query = f'INSERT INTO BookReview (customer_id, isbn, review_content, review_stars) VALUES((SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1), "{isbn}", "{review_content}", "{review_stars}")'
+    cursor.execute(query)
+    db.get_db().commit()
+    '''
+    db.get_db().commit()
+    return "Success!"

@@ -33,7 +33,9 @@ def add_book_review():
     isbn = request.form["isbn"]
     review_content = request.form["review_content"]
     review_stars = request.form["review_stars"]
-    query = f'INSERT INTO BookReview (customer_id, isbn, review_content, review_stars) VALUES((SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1), "{isbn}", "{review_content}", "{review_stars}")'
+    query = f'INSERT INTO BookReview (customer_id, isbn, review_content, review_stars) \
+        VALUES((SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1), \
+            "{isbn}", "{review_content}", "{review_stars}")'
     cursor.execute(query)
     db.get_db().commit()
 
