@@ -43,6 +43,7 @@ def get_customer_books(username, password):
     the_response.mimetype = "application/json"
     return the_response
 
+
 # Add new book to cart
 @customers.route("/new_book_to_cart", methods=["POST"])
 def add_book_to_cart():
@@ -68,7 +69,7 @@ def add_book_to_cart():
         WHERE name = "{library_name}" LIMIT 1'
     cursor.execute(discount_query)
     discount_data = cursor.fetchall()
-    print(f'DISCOUNT DATA: {discount_data}')
+    print(f"DISCOUNT DATA: {discount_data}")
     discount = 0
     if discount_data != ():
         discount = discount_data[0][0]
@@ -81,3 +82,20 @@ def add_book_to_cart():
     cursor.execute(line_query)
     db.get_db().commit()
     return "Success!"
+
+
+@customers.route("/invoice/<invoice_id>", methods=["GET"])
+def view_invoice(invoice_id):
+    cursor = db.get_db().cursor()
+    cursor.execute(
+        f'SELECT price_per_unit AS "Price per Unit", quantity as "Quantity", isbn as "ISBN" FROM Invoice NATURAL JOIN InvoiceLine WHERE invoice_id = {invoice_id}'
+    )
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = "application/json"
+    return the_response
