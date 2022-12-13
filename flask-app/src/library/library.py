@@ -24,7 +24,7 @@ def get_libraries(country, town):
     return the_response
 
 
-# Get all books that particular author has written
+# Get all libraries
 @libraries.route("/libraries", methods=["GET"])
 def get_bookstores():
     cursor = db.get_db().cursor()

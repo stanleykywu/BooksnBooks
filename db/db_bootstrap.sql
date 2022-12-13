@@ -139,7 +139,7 @@ VALUES
 
 CREATE TABLE Invoice (
     invoice_id INT AUTO_INCREMENT PRIMARY KEY,
-    date DATE NOT NULL,
+    date DATE,
     -- invoice total cannot be negative
     total FLOAT NOT NULL CHECK (total >= 0),
     customer_id INT NOT NULL,

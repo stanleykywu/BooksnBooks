@@ -21,10 +21,10 @@ def add_author():
     return "Success!"
 
 # Get all books that particular author has written
-@authors.route("/authors/<authorUsername>", methods=["GET"])
-def get_author_books(authorUsername):
+@authors.route("/authors/<username>/<password>", methods=["GET"])
+def get_author_books(username, password):
     cursor = db.get_db().cursor()
-    cursor.execute(f"SELECT * from Book where username = {authorUsername} LIMIT 5")  # TODO: fix
+    cursor.execute(f'SELECT title AS "Your_Books" from Book NATURAL JOIN Author WHERE username = "{username}" AND password = "{password}"')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
