@@ -1,16 +1,30 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, current_app
 import json
 from src import db
 
 
 authors = Blueprint("authors", __name__)
 
+# Add author to DB
+@authors.route("/new_author", methods=["POST"])
+def add_author():
+    current_app.logger.info(request.form)
+    cursor = db.get_db().cursor()
+    username = request.form["username"]
+    password = request.form["password"]
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
+    query = f'INSERT INTO Author(username, password, first_name, last_name) VALUES("{username}", "{password}", "{first_name}", "{last_name}")'
+    cursor.execute(query)
+    db.get_db().commit()
+
+    return "Success!"
 
 # Get all books that particular author has written
-@authors.route("/authors/<authorID>", methods=["GET"])
-def get_author_books(authorID):
+@authors.route("/authors/<authorUsername>", methods=["GET"])
+def get_author_books(authorUsername):
     cursor = db.get_db().cursor()
-    cursor.execute(f"SELECT * from Book where author_id = {authorID} LIMIT 5")
+    cursor.execute(f"SELECT * from Book where username = {authorUsername} LIMIT 5")  # TODO: fix
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()

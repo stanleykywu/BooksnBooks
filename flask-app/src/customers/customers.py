@@ -41,11 +41,11 @@ def add_customer():
 
 
 # Get all books that a customer has bought
-@customers.route("/customers/<customerID>", methods=["GET"])
-def get_customer_books(customerID):
+@customers.route("/customers/<customerUsername>", methods=["GET"])
+def get_customer_books(customerUsername):
     cursor = db.get_db().cursor()
     cursor.execute(
-        f"SELECT * from Invoice where customer_id = {customerID} NATURAL JOIN InvoiceLine NATURAL JOIN Book"
+        f"SELECT * from Invoice where username = {customerUsername} NATURAL JOIN InvoiceLine NATURAL JOIN Book"
     )
     row_headers = [x[0] for x in cursor.description]
     json_data = []
