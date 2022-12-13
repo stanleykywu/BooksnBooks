@@ -66,14 +66,24 @@ def add_book_to_cart():
     cursor = db.get_db().cursor()
     username = request.form["username"]
     isbn = request.form["isbn"]
-    query = f'SELECT * FROM Customer NATURAL JOIN Invoice WHERE date IS NULL AND username = "{username}"'
+    library_name = request.form["library_name"]
+    quantity = request.form["quantity"]
+    # let "1001-01-01" be the "null" default date
+    query = f'SELECT invoice_id FROM Customer NATURAL JOIN Invoice WHERE date = "1001-01-01" AND username = "{username}"'
     cursor.execute(query)
-    theData = cursor.fetchall()[0] == ()
-    print(f'CART EXISTS: {theData}')
-    '''
-    query = f'INSERT INTO BookReview (customer_id, isbn, review_content, review_stars) VALUES((SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1), "{isbn}", "{review_content}", "{review_stars}")'
-    cursor.execute(query)
-    db.get_db().commit()
-    '''
+    theData = cursor.fetchall()
+    noCartExists = theData == ()
+    print(f'CART EXISTS: {noCartExists}')
+    if theData == ():
+        invoice_query = f'INSERT INTO Invoice (date, total, customer_id) \
+            VALUES("1001-01-01", 0, (SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1))'
+        cursor.execute(invoice_query)
+
+    # TODO: add support for price_per_quantity, consider adding quantity field
+    line_query = f'INSERT INTO InvoiceLine (invoice_id, price_per_unit, quantity, isbn) \
+        VALUES((SELECT invoice_id FROM Customer NATURAL JOIN Invoice \
+            WHERE date = "1001-01-01" AND username = "{username}" LIMIT 1), \
+            1, {quantity}, "{isbn}")'
+    cursor.execute(line_query)
     db.get_db().commit()
     return "Success!"
