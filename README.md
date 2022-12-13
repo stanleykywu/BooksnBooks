@@ -2,7 +2,7 @@
 
 This repository allows one to host their own REST api for an online library/bookstore management system locally. Examples of possible actions include customers buying books, and viewing available books in libraries. This project's goal is to develop a stronger connection between readers, authors, and libraries while maintaining a centralized location for book distribution.
 
-A video pitch demo of this project can be found here: https://drive.google.com/file/d/1syR69w59enBVpXAvNe561VRHgtfOYR5k/view?usp=sharing
+A demonstration of this project running on AppSmith can be found here: https://drive.google.com/file/d/1syR69w59enBVpXAvNe561VRHgtfOYR5k/view?usp=sharing
 
 This project is meant to support three personas:
 
