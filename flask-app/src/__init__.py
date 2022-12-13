@@ -26,14 +26,12 @@ def create_app():
     db.init_app(app)
 
     # Import the various routes
-    from src.views import views
     from src.authors.authors import authors
     from src.books.books import books
     from src.library.library import libraries
     from src.customers.customers import customers
 
     # Register the routes that we just imported so they can be properly handled
-    app.register_blueprint(views, url_prefix="/classic")
     app.register_blueprint(customers, url_prefix="/cust")
     app.register_blueprint(authors, url_prefix="/auth")
     app.register_blueprint(books, url_prefix="/bk")
