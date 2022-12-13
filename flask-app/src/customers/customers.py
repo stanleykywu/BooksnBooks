@@ -69,21 +69,31 @@ def add_book_to_cart():
     library_name = request.form["library_name"]
     quantity = request.form["quantity"]
     # let "1001-01-01" be the "null" default date
-    query = f'SELECT invoice_id FROM Customer NATURAL JOIN Invoice WHERE date = "1001-01-01" AND username = "{username}"'
-    cursor.execute(query)
+    # date and total are populated once the customer checks out
+    invoice_query = f'SELECT invoice_id FROM Customer NATURAL JOIN Invoice \
+        WHERE date = "1001-01-01" AND username = "{username}"'
+    cursor.execute(invoice_query)
     theData = cursor.fetchall()
-    noCartExists = theData == ()
-    print(f'CART EXISTS: {noCartExists}')
     if theData == ():
         invoice_query = f'INSERT INTO Invoice (date, total, customer_id) \
             VALUES("1001-01-01", 0, (SELECT customer_id FROM Customer WHERE username = "{username}" LIMIT 1))'
         cursor.execute(invoice_query)
 
-    # TODO: add support for price_per_quantity, consider adding quantity field
+    # TODO: add support for price_per_quantity
+    discount_query = f'SELECT discount FROM AuthorPartner NATURAL JOIN Library \
+        WHERE name = "{library_name}" LIMIT 1'
+    cursor.execute(discount_query)
+    discount_data = cursor.fetchall()
+    print(f'DISCOUNT DATA: {discount_data}')
+    discount = 0
+    if discount_data != ():
+        discount = discount_data[0][0]
+
     line_query = f'INSERT INTO InvoiceLine (invoice_id, price_per_unit, quantity, isbn) \
         VALUES((SELECT invoice_id FROM Customer NATURAL JOIN Invoice \
             WHERE date = "1001-01-01" AND username = "{username}" LIMIT 1), \
-            1, {quantity}, "{isbn}")'
+            (SELECT price FROM Book WHERE isbn = "{isbn}" LIMIT 1) * (1 - {discount})* {quantity}, \
+            {quantity}, "{isbn}")'
     cursor.execute(line_query)
     db.get_db().commit()
     return "Success!"
